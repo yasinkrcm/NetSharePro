@@ -18,6 +18,9 @@ final class KeychainStore {
         ]
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
+        #if DEBUG
+        print("NETSHARE-KC read[\(key)] status=\(status)")
+        #endif
         guard status == errSecSuccess, let data = result as? Data else { return nil }
         return String(data: data, encoding: .utf8)
     }
@@ -33,9 +36,15 @@ final class KeychainStore {
             kSecValueData as String: data
         ]
         let updateStatus = SecItemUpdate(searchQuery as CFDictionary, updateAttributes as CFDictionary)
+        #if DEBUG
+        print("NETSHARE-KC update[\(key)] status=\(updateStatus)")
+        #endif
         if updateStatus == errSecItemNotFound {
             searchQuery[kSecValueData as String] = data
-            SecItemAdd(searchQuery as CFDictionary, nil)
+            let addStatus = SecItemAdd(searchQuery as CFDictionary, nil)
+            #if DEBUG
+            print("NETSHARE-KC add[\(key)] status=\(addStatus)")
+            #endif
         }
     }
 

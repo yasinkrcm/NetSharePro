@@ -66,6 +66,12 @@ struct NetShareProApp: App {
                 .tint(AppTheme.accentLight)
                 .onAppear {
                     context.startDiscovery()
+                    #if DEBUG
+                    if ProcessInfo.processInfo.arguments.contains("--autostart"),
+                       !context.engine.isRunning {
+                        context.dashboardViewModel.startSharing()
+                    }
+                    #endif
                 }
         }
         .onChange(of: scenePhase) { newPhase in
